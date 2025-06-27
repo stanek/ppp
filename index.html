@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChatGPT Showcase</title>
+
+  <!-- site styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- code-highlight theme -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/github-dark.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <!-- compiled project view -->
+  <iframe id="project-frame" src="" loading="lazy"></iframe>
+
+  <!-- floating info panel -->
+  <div id="panel" class="floating">
+    <header>
+      <!-- arrow navigation -->
+      <button id="prev-prompt" class="nav-snap" aria-label="Previous prompt">&larr;</button>
+
+      <span id="panel-title"></span>
+
+      <button id="next-prompt" class="nav-snap" aria-label="Next prompt">&rarr;</button>
+
+      <!-- existing controls -->
+      <button id="dock-btn" aria-label="Dock to corner">📐</button>
+      <button id="min-btn"  aria-label="Minimise">&minus;</button>
+    </header>
+
+    <nav>
+      <button data-tab="prompt">Prompt</button>
+      <button data-tab="response">Response</button>
+      <button data-tab="analysis">After Implementation</button>
+      <button data-tab="files">Files</button>
+    </nav>
+
+    <section id="tab-content"></section>
+  </div>
+
+  <!-- libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/highlight.min.js"></script>
+
+  <!-- main logic -->
+  <script src="script.js"></script>
+</body>
+</html>

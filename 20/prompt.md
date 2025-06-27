@@ -1,0 +1,1 @@
+Can we save the state of the Key & Tempo & Grid settings toggled on between reloads

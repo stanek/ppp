@@ -1,0 +1,1 @@
+when i move a selected square that has a fingering, the original square it was in doesnt clear/refect its new state

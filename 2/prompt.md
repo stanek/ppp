@@ -1,0 +1,1 @@
+Access to script at 'file:///Users/rafal/Desktop/pp/script.js' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: chrome, chrome-extension, chrome-untrusted, data, http, https, isolated-app.

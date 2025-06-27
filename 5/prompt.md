@@ -1,0 +1,1 @@
+please remove padding between keys and make the black keys just as tall as the white keys

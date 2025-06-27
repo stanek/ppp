@@ -1,0 +1,3 @@
+I can't believe it worked first try...
+
+Try it out! place some notes...  Click play.. stop.. change the tempo.. wow!

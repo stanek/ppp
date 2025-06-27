@@ -1,0 +1,1 @@
+lets save the fingerings when we refresh and move them when we drag select move a note

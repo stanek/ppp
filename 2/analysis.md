@@ -1,0 +1,1 @@
+I wanted to be able to run this from my hard drive in Chrome without a browser so the first option seems like it will do the trick

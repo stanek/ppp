@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Playable Piano Sequencer</title>
+
+  <!-- Tone.js -->
+  <script src="https://unpkg.com/tone@latest/build/Tone.js"></script>
+
+  <!-- styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <h1>Mini Piano + Grid Sequencer</h1>
+
+  <!-- transport -->
+  <div id="transport">
+    <button id="playBtn">▶︎ Play</button>
+    <button id="pauseBtn">‖ Pause</button>
+    <button id="stopBtn">■ Stop</button>
+    <label>
+      Tempo <input id="tempo" type="number" value="120" min="30" max="300"> BPM
+    </label>
+  </div>
+
+  <!-- piano + grid -->
+  <table id="piano"></table>
+  <table id="grid" class="seq"></table>
+
+  <!-- logic -->
+  <script defer src="script.js"></script>
+</body>
+</html>

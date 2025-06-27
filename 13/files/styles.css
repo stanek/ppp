@@ -1,0 +1,53 @@
+/* ----------- COLOR VARIABLES ------------------------------------------ */
+:root{
+  --white-key:#fff;
+  --black-key:#111;
+  --active:   #228b22;     /* ON  (green)  */
+  --selected: #ff8c00;     /* drag-selected (orange) */
+
+  --key-w : 25px;
+  --key-h : 150px;
+  --grid-s: calc(var(--key-w) + 1px); /* 26 px incl. shared border */
+}
+
+/* ----------- BASIC LAYOUT --------------------------------------------- */
+body{
+  margin:0; padding:1rem; background:#222; color:#ddd;
+  font-family:system-ui,sans-serif; user-select:none; text-align:center;
+}
+table{ border-collapse:collapse; margin-inline:auto; }
+td   { padding:0; text-align:center; }
+
+/* ----------- TRANSPORT ------------------------------------------------- */
+#transport{ margin:0 0 1rem; display:flex; gap:.5rem; justify-content:center; }
+#transport input{ width:4rem; }
+
+/* ----------- LABEL ROWS ------------------------------------------------ */
+.octave{ font-size:1.5rem; font-weight:700;
+         border-left:2px solid #777; border-right:2px solid #777; }
+.note  { font-size:.9rem; }
+
+/* ----------- KEYS ------------------------------------------------------ */
+.key{
+  width:var(--key-w); height:var(--key-h);
+  border:1px solid #444; display:inline-block; cursor:pointer;
+}
+.white{ background:var(--white-key); }
+.black{ background:var(--black-key); color:#eee; }
+.held { filter:brightness(75%); }
+
+/* ----------- SEQUENCER GRID ------------------------------------------- */
+.seq{ position:relative; }
+.seq td{
+  width:var(--grid-s); height:var(--grid-s);
+  background:#333; border:1px solid #555; cursor:pointer;
+}
+.seq td.on       { background:var(--active); }
+.seq td.selected { background:var(--selected) !important; }  /* overrides green */
+
+/* --- red playback cursor ---------------------------------------------- */
+#cursor{
+  position:absolute; left:0; right:0; height:2px;
+  background:red; pointer-events:none;
+  transform:translateY(-2px);
+}

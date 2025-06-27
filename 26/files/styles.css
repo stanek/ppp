@@ -1,0 +1,87 @@
+:root{
+  /* piano colours */
+  --white-key:#fff;
+  --black-key:#111;
+
+  /* grid colours */
+  --grid-bg : #333;     /* default empty square              */
+  --grid-out: #444;     /* square whose pitch is outside key */
+  --grid-on : #228b22;  /* green “on” square                 */
+
+  /* highlight */
+  --sel:#ff8c00;
+
+  /* sizes */
+  --key-w :25px;
+  --key-h :150px;
+  --cell  :calc(var(--key-w) + 1px);
+}
+
+/* ---------- BASIC LAYOUT -------------------------------------------- */
+body{
+  margin:0; padding:1rem; background:#222; color:#ddd;
+  font-family:system-ui,sans-serif; user-select:none; text-align:center;
+}
+table{ border-collapse:collapse; margin-inline:auto; }
+td   { padding:0; text-align:center; }
+#transport{ margin:0 0 1rem; display:flex; gap:.5rem; justify-content:center; }
+#transport input{ width:4rem; }
+
+/* ---------- PIANO ---------------------------------------------------- */
+.octave{ font-size:1.5rem; font-weight:700;
+         border-left:2px solid #777; border-right:2px solid #777; }
+.note  { font-size:.9rem; }
+
+.key{
+  width:var(--key-w); height:var(--key-h);
+  border:1px solid #444; display:inline-block; cursor:pointer;
+}
+.white{ background:var(--white-key); }
+.black{ background:var(--black-key); color:#eee; }
+.held { filter:brightness(75%); }
+
+/* ---------- GRID ----------------------------------------------------- */
+.seq{ position:relative; }
+.seq td{
+  width:var(--cell); height:var(--cell);
+  background:var(--grid-bg);
+  border:1px solid #555; cursor:pointer;
+}
+.seq td.outkey  { background:var(--grid-out); }
+.seq td.on      { background:var(--grid-on); }
+.seq td.selected{ background:var(--sel) !important; }
+
+/* NEW ─ fingering numbers */
+.seq td.fingering{
+  color:#fff;
+  font-size:.8rem;
+  font-weight:700;
+  line-height:var(--cell);
+  text-align:center;
+}
+
+/* playback cursor ----------------------------------------------------- */
+#cursor{
+  position:absolute; left:0; right:0; height:2px;
+  background:red; pointer-events:none;
+  transform:translateY(-2px);
+}
+
+/* lasso rectangle ----------------------------------------------------- */
+#lasso{
+  position:absolute; border:1px dashed var(--sel);
+  background:rgba(255,140,0,.15);
+  pointer-events:none; display:none;
+}
+
+/* dropdown block ------------------------------------------------------ */
+#keySelect{
+  display:inline-flex; gap:.5rem; margin-bottom:.5rem;
+  align-items:center; justify-content:center;
+}
+#keySelect select{ padding:.2rem; }
+
+/* sticky piano -------------------------------------------------------- */
+#piano{
+  position:sticky; top:0; background:#222; z-index:10;
+}
