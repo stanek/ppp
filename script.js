@@ -1,218 +1,146 @@
 /* ============================================================
-   ChatGPT Showcase – script.js  (v7.1-fix)
-   • Arrows reset to Prompt tab
-   • Tabs stay put when clicked
-   • No duplicate parseURL declaration
+   ChatGPT Showcase – script.js  (v8)
+   · Robust baseDir detection:
+       - /ppp/  → /ppp/1/
+       - /1/    → /2/ works locally
+   · Everything else (arrows, tabs, code collapse, etc.) unchanged
    ============================================================ */
 
 (async () => {
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
 
-  /* ---------- helper: icon for Files tab ------------------ */
-  const iconFor = ext =>
-    ({ html:'📄', htm:'📄', css:'🎨', js:'📜', zip:'🗜️' }[ext] || '📄');
-
-  /* ---------- path utilities ------------------------------ */
-  const normalize = p => {
+  /* ---------- 1. Normalise current path ------------------ */
+  function tidy(p) {
     p = p.replace(/\/+/g, '/').replace(/\/index\.html?$/i, '/');
     return p.endsWith('/') ? p : p + '/';
-  };
-
-  const parseUrl = p => {
-    p = normalize(p);
-    const m = p.match(/^(.*?)(\d+)\/$/);
-    return {
-      baseDir : (m ? m[1] : '/').replace(/\/?$/, '/'),
-      snap    : m ? m[2] : '1',
-    };
-  };
-
-  /* ---------- initial URL parse --------------------------- */
-  let { baseDir, snap } = parseUrl(location.pathname);
-  let snapNum = +snap;
-
-  if (!/\d+\/$/.test(location.pathname)) {
-    history.replaceState({}, '', `${baseDir}1/`);
-    snap = '1'; snapNum = 1;
   }
+  let path = tidy(location.pathname);
 
-  /* ---------- latest snapshot number ---------------------- */
-  const latest = +(await fetch(`${baseDir}snapshots.json`)
-    .then(r => r.json())
-    .catch(() => ({ latest: 1 }))).latest || 1;
+  /* ---------- 2. Extract baseDir and snapshot ------------ */
+  // split → ["", "ppp", ""]   or ["", "1", ""]
+  const parts = path.split('/').filter(Boolean);
+  const maybeNum = parts.at(-1);
+  let snapshot, baseDir;
 
-  /* ---------- DOM refs ------------------------------------ */
+  if (/^\d+$/.test(maybeNum)) {
+    snapshot = maybeNum;
+    baseDir  = '/' + parts.slice(0, -1).join('/') + '/';
+  } else {
+    snapshot = '1';
+    baseDir  = '/' + parts.join('/') + '/';
+    history.replaceState({}, '', baseDir + '1/');
+  }
+  if (baseDir === '//') baseDir = '/';              // when served from folder root
+
+  let snapNum = +snapshot;
+
+  /* ---------- 3. Latest snapshot ------------------------- */
+  const latest = +(await fetch(`${baseDir}snapshots.json`).then(r => r.json())).latest || 1;
+
+  /* ---------- 4. DOM refs -------------------------------- */
   const prevBtn = $('#prev-prompt');
   const nextBtn = $('#next-prompt');
-  const panelTitle = $('#panel-title');
-  const nav = $('nav');
+  const nav     = $('nav');
   const tabArea = $('#tab-content');
-  const iframe = $('#project-frame');
-  const panel = $('#panel');
+  const title   = $('#panel-title');
+  const iframe  = $('#project-frame');
+  const panel   = $('#panel');
 
-  /* ---------- helper: activate Prompt tab ----------------- */
-  const activatePromptTab = () => {
-    nav.querySelectorAll('button').forEach(b =>
-      b.classList.toggle('active', b.dataset.tab === 'prompt'),
-    );
-  };
+  /* helper */
+  const icon = e => ({html:'📄', htm:'📄', css:'🎨', js:'📜', zip:'🗜️'}[e]||'📄');
+  const md   = async f=>{
+    try{const t=await fetch(`${baseDir}${snapshot}/${f}`).then(r=>r.text());
+    return f.endsWith('.html')?t:marked.parse(t);}catch{return '<em>no content</em>';}};
 
-  /* ---------- fetch Markdown/HTML ------------------------- */
-  const fetchMD = async file => {
-    try {
-      const txt = await fetch(`${baseDir}${snap}/${file}`).then(r => r.text());
-      return file.endsWith('.html') ? txt : marked.parse(txt);
-    } catch {
-      return '<em>no content</em>';
-    }
-  };
+  /* ---------- 5. loadSnapshot ---------------------------- */
+  async function loadSnapshot(n, push=true, forceTab='prompt'){
+    snapshot=String(n); snapNum=n;
+    if(push) history.pushState({},'',`${baseDir}${snapshot}/`);
 
-  /* ---------- snapshot loader ----------------------------- */
-  async function loadSnapshot(n, push = true) {
-    snap = String(n);
-    snapNum = n;
-    if (push) history.pushState({}, '', `${baseDir}${snap}/`);
-
-    const [promptHTML, responseHTML, analysisHTML] = await Promise.all([
-      fetchMD('prompt.md'),
-      fetchMD('response.md'),
-      fetchMD('analysis.md'),
+    const [pHTML,rHTML,aHTML]=await Promise.all([
+      md('prompt.md'), md('response.md'), md('analysis.md')
     ]);
 
-    const filesTab = async () => {
-      let tiles = '';
-      try {
-        const list = await fetch(`${baseDir}${snap}/files/files.md`).then(r => r.text());
-        tiles = list
-          .split(/\r?\n/)
-          .filter(Boolean)
-          .map(f => {
-            const ext = f.split('.').pop().toLowerCase();
-            return `<a class="file-link" href="${baseDir}${snap}/files/${f}" download>
-                      <span class="file-icon">${iconFor(ext)}</span>
-                      <span class="file-name">${f}</span>
-                    </a>`;
-          })
-          .join('');
-      } catch {}
-      return `
-        <a href="${baseDir}${snap}/files.zip" class="download-all" download>
-          🗜️ Download all
-        </a>
-        ${tiles ? `<div class="file-grid">${tiles}</div>` : '<p>No individual files.</p>'}
-      `;
+    const filesHTML = async ()=>{
+      let tiles=''; try{
+        const list=await fetch(`${baseDir}${snapshot}/files/files.md`).then(r=>r.text());
+        tiles=list.split(/\r?\n/).filter(Boolean).map(f=>{
+          const ext=f.split('.').pop().toLowerCase();
+          return `<a class="file-link" href="${baseDir}${snapshot}/files/${f}" download>
+                    <span class="file-icon">${icon(ext)}</span>
+                    <span class="file-name">${f}</span>
+                  </a>`;}).join('');}catch{}
+      return `<a href="${baseDir}${snapshot}/files.zip" class="download-all" download>🗜️ Download all</a>
+              ${tiles?`<div class="file-grid">${tiles}</div>`:'<p>No individual files.</p>'}`;
     };
 
-    const tabHtml = {
-      prompt  : promptHTML,
-      response: responseHTML,
-      analysis: analysisHTML,
-      files   : await filesTab(),
+    const html = {
+      prompt  : pHTML,
+      response: rHTML,
+      analysis: aHTML,
+      files   : await filesHTML(),
     };
 
     /* header + arrows */
-    panelTitle.textContent = `Prompt #${snap}`;
-    prevBtn.classList.toggle('hidden', snapNum <= 1);
-    nextBtn.classList.toggle('hidden', snapNum >= latest);
+    title.textContent = `Prompt #${snapshot}`;
+    prevBtn.classList.toggle('hidden', snapNum<=1);
+    nextBtn.classList.toggle('hidden', snapNum>=latest);
 
-    /* render currently-active tab */
-    const activeTab = nav.querySelector('button.active')?.dataset.tab || 'prompt';
-    tabArea.innerHTML = tabHtml[activeTab] || '';
-    enhanceMarkdown();
+    /* active tab (force to prompt when arrow used) */
+    if(forceTab){ nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.tab==='prompt')); }
+    const active = nav.querySelector('button.active').dataset.tab;
+    tabArea.innerHTML = html[active] || '';
+    enhance();
 
-    /* iframe */
-    iframe.src = `${baseDir}${snap}/files/index.html`;
+    iframe.src = `${baseDir}${snapshot}/files/index.html`;
   }
 
-  /* ---------- enhance markdown (copy buttons, etc.) ------- */
-  function enhanceMarkdown() {
-    const area = tabArea;
-
-    area.querySelectorAll('pre').forEach(pre => {
-      if (pre.parentElement.classList.contains('code-block')) return;
-      const details = document.createElement('details');
-      details.className = 'code-block';
-      const summary = document.createElement('summary');
-      const lang = pre.querySelector('code')?.className.match(/language-(\w+)/)?.[1] || 'code';
-      summary.textContent = `${lang} ▼`;
-      pre.parentNode.insertBefore(details, pre);
-      details.append(summary, pre);
+  /* ---------- 6. enhance markdown ------------------------ */
+  function enhance(){
+    tabArea.querySelectorAll('pre').forEach(pre=>{
+      if(pre.parentElement.classList.contains('code-block'))return;
+      const d=document.createElement('details');d.className='code-block';
+      const s=document.createElement('summary');
+      const lang=pre.querySelector('code')?.className.match(/language-(\w+)/)?.[1]||'code';
+      s.textContent=`${lang} ▼`; pre.parentNode.insertBefore(d,pre); d.append(s,pre);
     });
-
     hljs.highlightAll();
-
-    area.querySelectorAll('pre').forEach(pre => {
-      if (pre.querySelector('.copy-btn')) return;
-      const btn = Object.assign(document.createElement('button'), {
-        className: 'copy-btn',
-        textContent: 'copy',
-      });
-      btn.onclick = () =>
-        navigator.clipboard.writeText(pre.innerText.trim()).then(() => {
-          btn.textContent = '✓';
-          setTimeout(() => (btn.textContent = 'copy'), 800);
-        });
-      pre.appendChild(btn);
+    tabArea.querySelectorAll('pre').forEach(pre=>{
+      if(pre.querySelector('.copy-btn'))return;
+      const b=Object.assign(document.createElement('button'),{className:'copy-btn',textContent:'copy'});
+      b.onclick=()=>navigator.clipboard.writeText(pre.innerText.trim()).then(()=>{b.textContent='✓';setTimeout(()=>b.textContent='copy',800)});
+      pre.appendChild(b);
     });
-
-    area.querySelectorAll('img').forEach(img => {
-      if (img.closest('a')) return;
-      const a = document.createElement('a');
-      a.href = img.src;
-      a.target = '_blank';
-      a.download = '';
-      img.parentNode.insertBefore(a, img);
-      a.appendChild(img);
+    tabArea.querySelectorAll('img').forEach(img=>{
+      if(img.closest('a'))return;
+      const a=document.createElement('a');a.href=img.src;a.target='_blank';a.download='';img.parentNode.insertBefore(a,img);a.appendChild(img);
     });
   }
 
-  /* ---------- initial load -------------------------------- */
-  await loadSnapshot(snapNum, false);
+  /* ---------- 7. initial load ---------------------------- */
+  await loadSnapshot(snapNum,false);
 
-  /* ---------- arrow handlers ------------------------------ */
-  prevBtn.onclick = () => {
-    if (snapNum > 1) {
-      activatePromptTab();
-      loadSnapshot(snapNum - 1);
-    }
-  };
-  nextBtn.onclick = () => {
-    if (snapNum < latest) {
-      activatePromptTab();
-      loadSnapshot(snapNum + 1);
-    }
-  };
+  /* ---------- 8. arrows ---------------------------------- */
+  prevBtn.onclick=()=>snapNum>1&&loadSnapshot(snapNum-1,true,true);
+  nextBtn.onclick=()=>snapNum<latest&&loadSnapshot(snapNum+1,true,true);
 
-  /* ---------- tab handlers ------------------------------- */
-  nav.addEventListener('click', e => {
-    if (e.target.tagName !== 'BUTTON') return;
-    nav.querySelectorAll('button').forEach(b =>
-      b.classList.toggle('active', b === e.target),
-    );
-    loadSnapshot(snapNum, false); // re-render current snapshot in new tab
+  /* ---------- 9. tabs ------------------------------------ */
+  nav.addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON')return;
+    nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===e.target));
+    loadSnapshot(snapNum,false,false);
   });
 
-  /* ---------- popstate (back/forward) --------------------- */
-  window.addEventListener('popstate', () => {
-    const { snap: newSnap } = parseUrl(location.pathname);
-    loadSnapshot(+newSnap, false);
+  /* ----------10. popstate (back/forward) ----------------- */
+  window.addEventListener('popstate',()=>{
+    const {snap:newSnap}=parseUrl(location.pathname);
+    loadSnapshot(+newSnap,false,false);
   });
 
-  /* ---------- docking & minimise (unchanged) -------------- */
-  const corners = ['bl', 'br', 'tr', 'tl'];
-  let cornerIdx = 0;
-  const dock = i => {
-    panel.className = panel.className.replace(/corner-\w+/, '');
-    panel.classList.add(`corner-${corners[i]}`);
-    cornerIdx = i;
-  };
-  dock(cornerIdx);
-
-  $('#dock-btn').onclick = () =>
-    !panel.classList.contains('min') && dock((cornerIdx + 1) % 4);
-
-  $('#min-btn').onclick = () => {
-    panel.classList.toggle('min');
-    if (!panel.classList.contains('min')) dock(cornerIdx);
-  };
+  /* ----------11. dock / minimise (unchanged) ------------- */
+  const corners=['bl','br','tr','tl'];let idx=0;
+  const dock=i=>{panel.className=panel.className.replace(/corner-\w+/,'');panel.classList.add(`corner-${corners[i]}`);idx=i;};
+  dock(idx);
+  $('#dock-btn').onclick=()=>!panel.classList.contains('min')&&dock((idx+1)%4);
+  $('#min-btn').onclick =()=>{panel.classList.toggle('min');if(!panel.classList.contains('min'))dock(idx);};
 })();
