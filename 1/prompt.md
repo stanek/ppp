@@ -1,3 +1,7 @@
+<div class="tag-center">
+  <span class="tag feature">FEATURE REQUEST</span>
+</div>
+
 I want to create a 2 file html page.  1 html file and 1 script file
 
 We will be creating a playable piano

@@ -1,1 +1,1 @@
-Lets allow up to 10 work spaces.  Allow the user to open up and rename up to 10 tabs, keeping them all in memoryallow me to click the workspace name to rename it
+allow me to click the workspace name to rename it

@@ -274,3 +274,45 @@ details.code-block pre {
 }
 .floating.min nav,
 .floating.min #tab-content { display: none; }
+
+/* ───────── TAG / LABEL CHIPS — large version ───────── */
+.tag {
+  display:  inline-block;
+  padding:  .2em .45em;          /* ← doubled all-around         */
+  margin:   .2em .2em 1.0em .2em;          /* keep a bit more breathing    */
+  font-size: 1.2rem;            /* twice the original .75rem    */
+  line-height: 1.25;            /* tighter now that we’re larger*/
+  font-weight: 700;
+  color: #fff;
+  border-radius: 4px;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.tag, .cap {
+  font-size: 110%;              /* 1.2 × larger than the rest */
+}
+
+/* Center one or many tags in a row  
+   Wrap your tags in <div class="tag-center">…</div>         */
+.tag-center {
+  display: flex;
+  flex-wrap: wrap;              /* allow wrapping on small screens */
+  justify-content: center;      /* horizontal centering            */
+  align-items: center;          /* vertical centering               */
+  gap: .4em;                    /* keeps equal spacing              */
+}
+
+/* palette */
+.tag.bug        { background:#d32f2f; }  /* red   */
+.tag.feature    { background:#388e3c; }  /* green */
+.tag.question   { background:#1976d2; }  /* blue  */
+.tag.improve    { background:#7b1fa2; }  /* purple*/
+.tag.todo       { background:#f57c00; }  /* orange*/
+
+/* CONTEXT / SOURCE TAGS  (new) */
+.tag.console    { background:#455a64; }   /* slate           */
+.tag.ui         { background:#00897b; }   /* teal            */
+.tag.audio      { background:#c2185b; }   /* pinkish         */
+.tag.network    { background:#5d4037; }   /* brown           */
+.tag.data       { background:#9e9d24; }   /* olive           */
