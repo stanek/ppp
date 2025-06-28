@@ -7,7 +7,7 @@ I want to create a 2 file html page.  1 html file and 1 script file
 We will be creating a playable piano
 
 I want to UI to reflect UI.jpg
-![My diagram](assets/UI.jpg)
+![My diagram](1/assets/UI.jpg)
 
 The first row is big numbers of the Octave of the keys below it
 The second row should have the name of the key (without the octave number)
