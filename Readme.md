@@ -1,3 +1,18 @@
+How to run python spa web server locally.
+
+If you want live reloading...
+pip install livereload
+cd into this repo
+cd ..
+python ppp/spa_server.py --live
+(browser should open automatically)
+
+If you dont want live reloading
+cd into this repo
+cd ..
+python ppp/spa_server.py
+navigate to http://localhost:8000/ppp/1/
+
 <!-- Tag reference block -->
 <span class="tag bug">BUG-FIX</span> Fixes a regression or error  
 <span class="tag feature">FEATURE REQUEST</span> New functionality proposal  
