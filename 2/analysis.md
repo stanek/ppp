@@ -1,1 +1,10 @@
-I wanted to be able to run this from my hard drive in Chrome without a browser so the first option seems like it will do the trick
+<div class="tag-center">
+  <span class="tag choice">Choice Presented</span>
+</div>
+ChatGPT provides us two possible resolutions.
+
+Option 1 is a single line fix
+
+Option 2 requires installation of external tools
+
+I think we should try Option 1 as it seems like a simple change and doesnt require additional dependancies to host our application locally on our Desktop.

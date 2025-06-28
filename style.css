@@ -9,6 +9,15 @@
   --color-main  : #005DAA;   /* blue accents */
   --color-accent: #FFD200;   /* yellow highlights */
 
+    --broken:#e53935;
+  --ok:#2e7d32;
+  --needs-fix:#e97b06;
+  --partial:#ffc44ffa;
+  --regression:#b71c1c;
+  --refined:#1e88e5;
+    --choice:#0d885b;
+    --informative:#0f4eb9;
+
   font-family: Roboto, Arial, Helvetica, sans-serif;
 }
 
@@ -108,7 +117,7 @@ nav button.active {
 #tab-content {
   flex: 1;
   overflow: auto;
-  padding: .5rem;
+  padding: .5rem 2rem;
   line-height: 1.45;
 }
 
@@ -308,6 +317,7 @@ details.code-block pre {
 .tag.feature    { background:#388e3c; }  /* green */
 .tag.question   { background:#1976d2; }  /* blue  */
 .tag.improve    { background:#7b1fa2; }  /* purple*/
+.tag.decision   { background:var(--choice); }  /* pink*/
 .tag.todo       { background:#f57c00; }  /* orange*/
 
 /* CONTEXT / SOURCE TAGS  (new) */
@@ -316,3 +326,14 @@ details.code-block pre {
 .tag.audio      { background:#c2185b; }   /* pinkish         */
 .tag.network    { background:#5d4037; }   /* brown           */
 .tag.data       { background:#9e9d24; }   /* olive           */
+
+/* status */
+.tag.broken     { background:var(--broken); }
+.tag.ok         { background:var(--ok); }
+.tag.progress   { background:var(--ok); }
+.tag.needs-fix  { background:var(--needs-fix); }
+.tag.partial    { background:var(--partial); }
+.tag.regression { background:var(--regression); }
+.tag.refined    { background:var(--refined); }
+.tag.choice     { background:var(--choice); }
+.tag.informative{ background:var(--informative); }
