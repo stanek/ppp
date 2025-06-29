@@ -1,3 +1,8 @@
+<div class="tag-center">
+    <span class="tag improve">Manual Enchancement</span>
+</div>
+
+
 I made some adjustments. note key and grid sizes
 
 /* ----------- COLOR VARIABLES ------------------------------------------ */

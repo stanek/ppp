@@ -317,7 +317,7 @@ details.code-block pre {
 .tag.feature    { background:#388e3c; }  /* green */
 .tag.question   { background:#1976d2; }  /* blue  */
 .tag.improve    { background:#7b1fa2; }  /* purple*/
-.tag.decision   { background:var(--choice); }  /* pink*/
+.tag.decision   { background:#9e9d24; }  /* olive*/
 .tag.todo       { background:#f57c00; }  /* orange*/
 
 /* CONTEXT / SOURCE TAGS  (new) */

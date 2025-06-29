@@ -36,6 +36,11 @@
   const iframe  = $('#project-frame');
   const panel   = $('#panel');
 
+  /* ---------- SCROLL MEMORY ------------------------------ */
+  const scrollMem = {};                         // { prompt: 120, response: 0, … }
+  const resetScrollMem = () => { Object.keys(scrollMem).forEach(k => delete scrollMem[k]); };
+  const getActiveTabName = () => nav.querySelector('button.active')?.dataset.tab;
+
   /* ---------- SMALL HELPERS ------------------------------ */
   const icon = e => ({html:'📄',htm:'📄',css:'🎨',js:'📜',zip:'🗜️'}[e]||'📄');
   const md   = async (n,f)=>{
@@ -135,8 +140,13 @@
     if (forcePrompt) activatePromptTab();
     let activeBtn = nav.querySelector('button.active');
     if (!activeBtn) { activatePromptTab(); activeBtn = nav.querySelector('button.active'); }
-    tabArea.innerHTML = html[activeBtn.dataset.tab] || '';
+    const activeTab = activeBtn.dataset.tab;
+
+    tabArea.innerHTML = html[activeTab] || '';
     enhanceMarkdown();                // ← includes capTags
+
+    /* ---- RESTORE SCROLL POSITION FOR THIS TAB ---- */
+    tabArea.scrollTop = scrollMem[activeTab] ?? 0;
 
     iframe.src = `${SLUG}${snapNum}/files/index.html`;
   }
@@ -146,23 +156,48 @@
 
   /* ---------- ARROW EVENTS ------------------------------- */
   prevBtn.onclick = () => {
-    if (snapNum > 1) { snapNum--; activatePromptTab(); renderSnapshot(true, true); }
+    if (snapNum > 1) {
+      /* reset scroll memory for new snapshot */
+      resetScrollMem();
+      snapNum--;
+      activatePromptTab();
+      renderSnapshot(true, true);
+    }
   };
   nextBtn.onclick = () => {
-    if (snapNum < latest) { snapNum++; activatePromptTab(); renderSnapshot(true, true); }
+    if (snapNum < latest) {
+      resetScrollMem();
+      snapNum++;
+      activatePromptTab();
+      renderSnapshot(true, true);
+    }
   };
 
   /* ---------- TAB SWITCH --------------------------------- */
   nav.addEventListener('click', e=>{
     if (e.target.tagName !== 'BUTTON') return;
+
+    /* save scroll position of outgoing tab */
+    const prevTab = getActiveTabName();
+    if (prevTab) scrollMem[prevTab] = tabArea.scrollTop;
+
+    /* toggle active state */
     nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b===e.target));
+
     renderSnapshot(false, false);
   });
 
   /* ---------- BACK / FORWARD ----------------------------- */
   window.addEventListener('popstate', ()=>{
     const m = clean(location.pathname).slice(SLUG.length).match(/^(\d+)/);
-    if (m) { snapNum = +m[1]; renderSnapshot(false, true); }
+    if (m) {
+      const newNum = +m[1];
+      if (newNum !== snapNum) {            // only wipe when snapshot actually changes
+        resetScrollMem();
+        snapNum = newNum;
+      }
+      renderSnapshot(false, true);
+    }
   });
 
   /* ---------- DOCK & MINIMISE (unchanged) ---------------- */

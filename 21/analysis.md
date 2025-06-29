@@ -1,1 +1,4 @@
-Saving functionality works strange in this replay editor, but it worked great as a stand alone app
+
+<div class="tag-center">
+    <span class="tag ok">Status: Working</span>
+</div>

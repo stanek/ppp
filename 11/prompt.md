@@ -1,3 +1,6 @@
+<div class="tag-center">
+  <span class="tag feature">FEATURE REQUEST</span>
+</div>
 I changed the grid lines available to 200.
 
 lets add playback function to the sequencer

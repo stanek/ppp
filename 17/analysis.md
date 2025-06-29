@@ -1,1 +1,3 @@
-There is a bug if you select some notes and then use the arrow keys to move them around.  can you find it?
+<div class="tag-center">
+    <span class="tag ok">Status: Working</span>
+</div>

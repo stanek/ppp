@@ -6,6 +6,7 @@ cd into this repo
 cd ..
 python ppp/spa_server.py --live
 (browser should open automatically)
+or run ./live_server.sh
 
 If you dont want live reloading
 cd into this repo
