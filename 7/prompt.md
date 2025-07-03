@@ -1,5 +1,5 @@
 <div class="tag-center">
-    <span class="tag improve">Manual Enchancement</span>
+    <span class="tag improve">Tweak UI: Manual Enchancement</span>
 </div>
 
 
